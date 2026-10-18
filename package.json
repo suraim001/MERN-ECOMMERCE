@@ -1,0 +1,28 @@
+{
+  "name": "mern-ecommerce",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --trace-warnings backend/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/suraim001/MERN-ECOMMERCE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/suraim001/MERN-ECOMMERCE/issues"
+  },
+  "homepage": "https://github.com/suraim001/MERN-ECOMMERCE#readme",
+  "dependencies": {
+    "dotenv": "^18.0.8",
+    "express": "^5.3.0",
+    "mongoose": "^9.11.2",
+    "nodemon": "^3.1.14"
+  }
+}
