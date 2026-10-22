@@ -10,7 +10,7 @@ export const createProducts = async (req, res, next) => {
             product
         });
     } catch (error) {
-        next(new HandleError(error));
+        next(error);
     }
 };
 
@@ -23,7 +23,7 @@ export const getAllProducts = async (req, res, next) => {
             products
         });
     } catch (error) {
-        next(new HandleError(error));
+        next(error);
     }
 };
 
@@ -42,7 +42,7 @@ export const updateProduct = async (req, res, next) => {
             product
         });
     } catch (error) {
-        next(new HandleError(error));
+        next(error);
     }
 };
 
@@ -57,7 +57,7 @@ export const deleteProduct = async (req, res, next) => {
             message: "Product Deleted Successfully"
         });
     } catch (error) {
-        next(new HandleError(error));
+        next(error);
     }
 };
 
@@ -72,6 +72,6 @@ export const getSingleProduct = async (req, res, next) => {
             product
         });
     } catch (error) {
-        next(new HandleError(error));
+        next(error);
     }
 };
