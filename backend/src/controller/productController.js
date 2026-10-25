@@ -1,4 +1,5 @@
 import Product from "../models/productModel.js";
+import APIFunctionality from "../utils/apiFunctionality.js";
 import HandleError from "../utils/handleError.js";
 
 // Create A New Product
@@ -17,7 +18,10 @@ export const createProducts = async (req, res, next) => {
 // Get All Products
 export const getAllProducts = async (req, res, next) => {
     try {
-        const products = await Product.find();
+        const resultPerPage = 3;
+        const apiFunctionality = new APIFunctionality(Product.find(), req.query).search().filter().pagination(resultPerPage);
+        
+        const products = await apiFunctionality.query;
         res.status(200).json({
             success: true,
             products
