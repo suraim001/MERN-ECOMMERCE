@@ -18,7 +18,7 @@ export const createProducts = async (req, res, next) => {
 // Get All Products
 export const getAllProducts = async (req, res, next) => {
     try {
-        const resultPerPage = 3;
+        const resultPerPage = Number(req.query.limit) || 3;
         const apiFeatures = new APIFunctionality(Product.find(), req.query).search().filter();
         
         // Getting filtered query before pagination

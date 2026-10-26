@@ -1,5 +1,7 @@
 import mongoose, { mongo } from "mongoose";
 import validator from "validator";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -53,5 +55,25 @@ const userSchema = new mongoose.Schema({
     resetPasswordToken: String,
     resetPasswordExpire: Date
 },{timestamps: true})
+
+// Password Hashing
+userSchema.pre("save", async function(next){
+    this.password = await bcrypt.hash(this.password, 10);
+
+    // do not hash the hashed password again during updating the user profile
+    if(!this.isModified("password")){
+        return next();
+    }
+})
+
+userSchema.methods.getJWTtoken = function(){
+    return jwt.sign({id: this._id},process.env.JWT_SECRET_KEY,{
+        expiresIn: process.env.JWT_EXPIRATION_TIME
+    })
+}
+
+userSchema.methods.verifyPassword = async function(userEnteredPassword){
+    return await bcrypt.compare(userEnteredPassword, this.password);
+}
 
 export default mongoose.model("User", userSchema);
