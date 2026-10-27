@@ -1,6 +1,7 @@
 import User from "../models/userModel.js";
 import HandleError from "../utils/handleError.js";
 import validator from "validator";
+import { sendToken } from "../utils/jwtToken.js";
 
 // Register
 export const registerUser = async (req, res, next) => {
@@ -17,14 +18,9 @@ export const registerUser = async (req, res, next) => {
                 url: "This is temp url"
             }
         })
+        user.password = undefined;
 
-        const token = user.getJWTtoken();
-
-        res.status(201).json({
-            success: true,
-            user,
-            token
-        })
+        sendToken(user, 201, res);
     } catch (error) {
         next(error);
     }
@@ -46,14 +42,9 @@ export const loginUser = async (req, res, next) => {
         if (!isPasswordValid) {
             return next(new HandleError("Invalid Credentials", 401));
         }
-        const token = user.getJWTtoken();
         user.password = undefined;
 
-        res.status(200).json({
-            success: true,
-            user,
-            token
-        })
+        sendToken(user, 200, res);
 
     } catch (error) {
         next(error);
