@@ -5,6 +5,7 @@ import HandleError from "../utils/handleError.js";
 // Create A New Product
 export const createProducts = async (req, res, next) => {
     try {
+        req.body.user = req.user._id;
         const product = await Product.create(req.body);
         res.status(201).json({
             success: true,

@@ -2,11 +2,12 @@ import mongoose, { mongo } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
-        required: [true,"Please enter Your name"],
+        required: [true, "Please enter Your name"],
         maxLength: [25, "Please enter a name with fewer than 25 characters"],
         minLength: [3, "Name should contain more than 3 characters"]
     },
@@ -14,7 +15,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Please enter your username"],
         unique: true,
-        lowercase: true, 
+        lowercase: true,
         minLength: [3, "Username should contain at least 3 characters"],
         maxLength: [16, "Username cannot exceed 16 characters"],
         // Wrapped the custom character check inside a valid Mongoose validator
@@ -54,26 +55,35 @@ const userSchema = new mongoose.Schema({
     },
     resetPasswordToken: String,
     resetPasswordExpire: Date
-},{timestamps: true})
+}, { timestamps: true })
 
 // Password Hashing
-userSchema.pre("save", async function(next){
-    this.password = await bcrypt.hash(this.password, 10);
-
+userSchema.pre("save", async function () {
     // do not hash the hashed password again during updating the user profile
-    if(!this.isModified("password")){
-        return next();
+    if (!this.isModified("password")) {
+        return;
     }
+
+    this.password = await bcrypt.hash(this.password, 10);
 })
 
-userSchema.methods.getJWTtoken = function(){
-    return jwt.sign({id: this._id},process.env.JWT_SECRET_KEY,{
+userSchema.methods.getJWTtoken = function () {
+    return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
         expiresIn: process.env.JWT_EXPIRATION_TIME
     })
 }
 
-userSchema.methods.verifyPassword = async function(userEnteredPassword){
+userSchema.methods.verifyPassword = async function (userEnteredPassword) {
     return await bcrypt.compare(userEnteredPassword, this.password);
+}
+
+// Generating token
+userSchema.methods.generatePasswordResetToken = function () {
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest('hex');
+    this.resetPasswordExpire = Date.now() + 30 * 60 * 1000  // 30 minutes
+
+    return resetToken;
 }
 
 export default mongoose.model("User", userSchema);
