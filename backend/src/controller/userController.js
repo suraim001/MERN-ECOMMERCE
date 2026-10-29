@@ -211,3 +211,30 @@ export const updatePassword = async (req, res, next) => {
         return next(error);
     }
 }
+
+// Updating user profile
+export const updateProfile = async(req, res, next) => {
+    try {
+        const {name, username} = req.body;
+        const updateUserDetails = {
+            name,
+            username
+        }
+        if(!name || !username) return next(new HandleError("Name or username cannot be empty", 400));
+
+        if ('email' in req.body || 'password' in req.body || '_id' in req.body || 'role' in req.body) return next(new HandleError("Only name and username can be changed", 401));
+        
+        const user = await User.findByIdAndUpdate(req.user.id, updateUserDetails, {
+            returnDocument: "after",
+            runValidators: true
+        })
+
+        res.status(200).json({
+            success: true,
+            message: "Profile Updated Successfully",
+            user
+        })
+    } catch (error) {
+        return next(error);
+    }
+}
