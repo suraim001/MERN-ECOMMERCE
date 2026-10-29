@@ -19,7 +19,7 @@ export const createProducts = async (req, res, next) => {
 // Get All Products
 export const getAllProducts = async (req, res, next) => {
     try {
-        const resultPerPage = Number(req.query.limit) || 3;
+        const resultPerPage = Number(req.query.limit) || process.env.PAGE_LIMIT;
         const apiFeatures = new APIFunctionality(Product.find(), req.query).search().filter();
         
         // Getting filtered query before pagination
@@ -101,3 +101,17 @@ export const getSingleProduct = async (req, res, next) => {
         next(error);
     }
 };
+
+// Admin - Get all products
+export const getAdminProducts = async(req, res, next) => {
+    try {
+        const products = await Product.find();
+        if(!products || products.length === 0) return next(new HandleError("No Product Found", 404));
+        res.status(200).json({
+            success: true,
+            products
+        })
+    } catch (error) {
+        return next(error);
+    }
+}

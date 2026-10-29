@@ -1,5 +1,5 @@
 import express from 'express';
-import { createProducts, deleteProduct, getAllProducts, getSingleProduct, updateProduct } from '../controller/productController.js';
+import { createProducts, deleteProduct, getAdminProducts, getAllProducts, getSingleProduct, updateProduct } from '../controller/productController.js';
 import { roleBasedAccess, verifyUserAuth } from '../middleware/userAuth.js';
 
 const router = express.Router();
@@ -9,12 +9,17 @@ router.route("/status")
 .get((req,res) => res.status(200).send("Server is Live!"));
 
 router.route("/products")
-.get(verifyUserAuth, getAllProducts)
-.post(verifyUserAuth, roleBasedAccess("admin"),  createProducts);
+.get(getAllProducts);
 
-router.route("/product/:id")
-.put(verifyUserAuth, roleBasedAccess("admin"), updateProduct)
-.delete(verifyUserAuth, roleBasedAccess("admin"), deleteProduct)
-.get(verifyUserAuth, getSingleProduct);
+router.route("/admin/products")
+.get(verifyUserAuth, roleBasedAccess("admin"), getAdminProducts);
+
+router.route("/admin/product/create").post(verifyUserAuth, roleBasedAccess("admin"),  createProducts);
+
+router.route("/admin/product/:id")
+.patch(verifyUserAuth, roleBasedAccess("admin"), updateProduct)
+.delete(verifyUserAuth, roleBasedAccess("admin"), deleteProduct);
+
+router.route("/product/:id").get(getSingleProduct);
 
 export default router;

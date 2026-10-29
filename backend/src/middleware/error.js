@@ -15,7 +15,17 @@ export default (err, req, res, next) => {
 
     // Duplicate key error
     if (err.code === 11000) {
-        const message = `This ${Object.keys(err.keyValue)} already registered. Please Login to continue.`;
+        let message;
+        const errorKey = Object.keys(err.keyValue)[0];
+        if (errorKey.includes("username")) {
+            message = 'This username is already taken. Please choose a different username';
+        }
+        else if (errorKey.includes("email")) {
+            message = 'An account is already registered with this email. Please try to login instead.';
+        }
+        else{
+            message = `Duplicate Key Error: ${errorKey}`
+        }
         err = new HandleError(message, 400);
     }
 

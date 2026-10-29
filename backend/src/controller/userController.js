@@ -4,13 +4,14 @@ import validator from "validator";
 import { sendToken } from "../utils/jwtToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
 // Register
 export const registerUser = async (req, res, next) => {
     try {
         const { name, username, email, password } = req.body;
 
-        if(!name || !username || !email || !password) return next(new HandleError("All the fields are required", 400));
+        if (!name || !username || !email || !password) return next(new HandleError("All the fields are required", 400));
 
         const user = await User.create({
             name,
@@ -20,7 +21,8 @@ export const registerUser = async (req, res, next) => {
             avatar: {
                 public_id: "This is temp public_id",
                 url: "This is temp url"
-            }
+            },
+            isLoggedIn: true
         })
         user.password = undefined;
 
@@ -46,12 +48,12 @@ export const loginUser = async (req, res, next) => {
         if (!isPasswordValid) {
             return next(new HandleError("Invalid Credentials", 401));
         }
-
+        user.isLoggedIn = true;
         if (user.resetPasswordToken) {
             user.resetPasswordToken = undefined;
             user.resetPasswordExpire = undefined;
-            await user.save({ validateBeforeSave: false });
         }
+        await user.save({ validateBeforeSave: false });
         user.password = undefined;
 
         sendToken(user, 200, res);
@@ -65,15 +67,22 @@ export const logoutUser = async (req, res, next) => {
     try {
         const { token } = req.cookies;
         if (!token) return next(new HandleError("Unsuccessful! Please login first", 400));
-
         res.clearCookie('token');
+        const decodedData = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+        const user = await User.findByIdAndUpdate(decodedData.id, { isLoggedIn: false }, { runValidators: false });
+        // console.log(user);
+
+        if (!user) {
+            return next(new HandleError("Something went wrong", 500));
+        }
 
         res.status(200).json({
             success: true,
             message: "Successfully Logged Out"
         })
     } catch (error) {
-        next(error);
+        return next(error);
     }
 }
 
@@ -144,6 +153,7 @@ export const resetPassword = async (req, res, next) => {
         if (password !== confirmPassword) return next(new HandleError("Password Doesn't match", 400))
 
         user.password = password;
+        user.isLoggedIn = true;
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
         await user.save();
@@ -213,17 +223,17 @@ export const updatePassword = async (req, res, next) => {
 }
 
 // Updating user profile
-export const updateProfile = async(req, res, next) => {
+export const updateProfile = async (req, res, next) => {
     try {
-        const {name, username} = req.body;
+        const { name, username } = req.body;
         const updateUserDetails = {
             name,
             username
         }
-        if(!name || !username) return next(new HandleError("Name or username cannot be empty", 400));
+        if (!name || !username) return next(new HandleError("Name or username cannot be empty", 400));
 
         if ('email' in req.body || 'password' in req.body || '_id' in req.body || 'role' in req.body) return next(new HandleError("Only name and username can be changed", 401));
-        
+
         const user = await User.findByIdAndUpdate(req.user.id, updateUserDetails, {
             returnDocument: "after",
             runValidators: true
@@ -238,3 +248,74 @@ export const updateProfile = async(req, res, next) => {
         return next(error);
     }
 }
+
+// Admin - Get all users information
+export const getUsersList = async(req, res, next) => {
+    try {
+        const users = await User.find();
+        if(!users){
+            return next(new HandleError("Something went wrong", 500));
+        }
+        res.status(200).json({
+            success: true,
+            users
+        })
+
+    } catch (error) {
+        return next(error);
+    }
+}
+
+// Admin - Get Single User Information
+export const getSingleUser = async(req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if(!user) return next(new HandleError("User doesn't exist", 404));
+        res.status(200).json({
+            success: true,
+            user
+        })
+    } catch (error) {
+        return next(error);
+    }
+}
+
+// Admin - Change User Role
+export const updateUserRole = async(req, res, next) => {
+    try {
+        const { role } = req.body;
+        if(!role) return next(new HandleError("Invalid Input", 400))
+        const newUserData = {
+            role
+        }
+        const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+            runValidators: true,
+            returnDocument: 'after'
+        });
+        if(!user) return next(new HandleError("User doesn't exist", 404));
+
+        res.status(200).json({
+            success: true,
+            user
+        })
+    } catch (error) {
+        return next(error);
+    }
+}
+
+// Admin - Delete User Profile
+export const deleteUser = async(req, res, next) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if(!user) return next(new HandleError("User doesn't exist", 404));
+
+        await User.findByIdAndDelete(req.params.id);
+        res.status(200).json({
+            success: true,
+            message: "User is Deleted Successfully"
+        })
+    } catch (error) {
+        return next(error);
+    }
+}
+

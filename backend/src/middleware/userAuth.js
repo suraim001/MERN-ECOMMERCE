@@ -6,7 +6,7 @@ export const verifyUserAuth = async (req, res, next) => {
     try {
         const { token } = req.cookies;
         // console.log(token);
-        if (!token) return next(new HandleError("User Logged Out! Please login first", 401))
+        if (!token) return next(new HandleError("Unsuccessful! Please login to continue", 401));
 
         const decodedData = jwt.verify(token, process.env.JWT_SECRET_KEY);
         // console.log(decodedData);
@@ -15,6 +15,10 @@ export const verifyUserAuth = async (req, res, next) => {
         if (!user) {
             res.clearCookie('token');
             return next(new HandleError("Authentication failure! Please login to continue", 401));
+        }
+        if (!user.isLoggedIn) {
+            res.clearCookie('token');
+            return next(new HandleError("User Logged Out! Please login first", 401));
         }
 
         if (user.resetPasswordExpire && user.resetPasswordExpire < new Date(Date.now())) {
@@ -33,7 +37,7 @@ export const verifyUserAuth = async (req, res, next) => {
 export const roleBasedAccess = (...roles) => {
     return (req, res, next) => {
         if (!roles.includes(req.user.role))
-            return next(new HandleError(`Role:${req.user.role} - Not Allowed!`, 403))
+            return next(new HandleError(`Role:${req.user.role} - is Not Allowed to make this request!`, 403))
 
         next();
     }
