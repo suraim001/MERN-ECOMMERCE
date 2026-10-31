@@ -103,16 +103,18 @@ export const getSingleProduct = async (req, res, next) => {
 };
 
 // Creating and Updating Review
-export const createReviewForProduct = async (req, res, next) => {
+export const createOrUpdateReview = async (req, res, next) => {
     try {
         const { rating, comment } = req.body;
+        if(!rating || ! comment) return next(new HandleError("Please give a rating and write a comment first", 400));
+
         const review = {
             user: req.user._id,
             name: req.user.name,
             rating: Number(rating),
             comment
         }
-        const product = await Product.findById(req.params.id);
+        const product = await Product.findById(req.query.id);
         if (!product) return next(new HandleError("Product not found", 404));
 
         const reviewExists = product.reviews.find(review => review.user.toString() === req.user._id.toString());
@@ -135,7 +137,8 @@ export const createReviewForProduct = async (req, res, next) => {
 
         product.ratings = product.reviews.length > 0 ? totalRatings / product.reviews.length : 0;
         await product.save({
-            validateBeforeSave: false
+            validateBeforeSave: true,
+            returnDocument: "after"
         })
 
         res.status(200).json({
@@ -145,6 +148,21 @@ export const createReviewForProduct = async (req, res, next) => {
 
     } catch (error) {
         return next(error);
+    }
+}
+
+// Get Reviews
+export const getProductReviews = async(req, res, next) => {
+    try {
+        const product = await Product.findById(req.query.id);
+        if(!product) return next(new HandleError("Product Not Found", 404));
+
+        res.status(200).json({
+            success: true,
+            reviews: product.reviews
+        })
+    } catch (error) {
+        next(error);
     }
 }
 

@@ -58,11 +58,11 @@ const productSchema = new mongoose.Schema({
             },
             rating: {
                 type: Number,
-                required: true
+                required: [true, "Please give a valid rating"]
             },
             comment: {
                 type: String,
-                required: true
+                required: [true, "Write a comment for the review"]
             }
         }
     ],
