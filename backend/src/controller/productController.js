@@ -2,7 +2,7 @@ import Product from "../models/productModel.js";
 import APIFunctionality from "../utils/apiFunctionality.js";
 import HandleError from "../utils/handleError.js";
 
-// Create A New Product
+// Admin - Create A New Product
 export const createProducts = async (req, res, next) => {
     try {
         req.body.user = req.user._id;
@@ -53,7 +53,7 @@ export const getAllProducts = async (req, res, next) => {
     }
 };
 
-// Update A Product
+// Admin - Update A Product
 export const updateProduct = async (req, res, next) => {
     try {
         const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
@@ -72,7 +72,7 @@ export const updateProduct = async (req, res, next) => {
     }
 };
 
-// Delete A Poduct
+// Admin - Delete A Poduct
 export const deleteProduct = async (req, res, next) => {
     try {
         const product = await Product.findByIdAndDelete(req.params.id);
