@@ -105,13 +105,13 @@ export const getSingleProduct = async (req, res, next) => {
 // Creating and Updating Review
 export const createOrUpdateReview = async (req, res, next) => {
     try {
-        const { rating, comment } = req.body;
-        if(!rating || ! comment) return next(new HandleError("Please give a rating and write a comment first", 400));
+        const { ratings, comment } = req.body;
+        if (!ratings || !comment) return next(new HandleError("Please give a rating and write a comment first", 400));
 
         const review = {
             user: req.user._id,
             name: req.user.name,
-            rating: Number(rating),
+            ratings: Number(ratings),
             comment
         }
         const product = await Product.findById(req.query.id);
@@ -122,7 +122,7 @@ export const createOrUpdateReview = async (req, res, next) => {
         if (reviewExists) {
             product.reviews.forEach(review => {
                 if (review.user.toString() === req.user._id.toString()) {
-                    review.rating = rating;
+                    review.ratings = ratings;
                     review.comment = comment;
                 }
             })
@@ -132,7 +132,7 @@ export const createOrUpdateReview = async (req, res, next) => {
         }
         let totalRatings = 0;
         product.reviews.forEach(review => {
-            totalRatings += review.rating
+            totalRatings += review.ratings
         })
 
         product.ratings = product.reviews.length > 0 ? totalRatings / product.reviews.length : 0;
@@ -152,14 +152,49 @@ export const createOrUpdateReview = async (req, res, next) => {
 }
 
 // Get Reviews
-export const getProductReviews = async(req, res, next) => {
+export const getProductReviews = async (req, res, next) => {
     try {
         const product = await Product.findById(req.query.id);
-        if(!product) return next(new HandleError("Product Not Found", 404));
+        if (!product) return next(new HandleError("Product Not Found", 404));
 
         res.status(200).json({
             success: true,
             reviews: product.reviews
+        })
+    } catch (error) {
+        next(error);
+    }
+}
+
+// Delete Reviews
+export const deleteReview = async (req, res, next) => {
+    try {
+        const product = await Product.findById(req.query.id);
+        if (!product) return next(new HandleError("Product not found", 404));
+
+        const isReviewExist = product.reviews.some(
+            (review) => review.user.toString() === req.user._id.toString()
+        );
+        if (!isReviewExist) return next(new HandleError("Review not found", 404));
+
+        product.reviews = product.reviews.filter(review => review.user.toString() !== req.user._id.toString());
+
+        let totalRatings = 0;
+        product.reviews.forEach(review => {
+            totalRatings += review.ratings
+        })
+
+        product.ratings = product.reviews.length > 0 ? totalRatings / product.reviews.length : 0;
+        product.numOfReviews = product.reviews.length;
+        await product.save({
+            returnDocument: "after",
+            runValidators: true
+        })
+
+        res.status(200).json({
+            success: true,
+            message: "Review Deleted Successfully",
+            product
         })
     } catch (error) {
         next(error);
