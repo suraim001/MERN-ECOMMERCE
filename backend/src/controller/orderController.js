@@ -118,3 +118,22 @@ async function updateQuantity(id, quantity){
     product.stock -= quantity;
     await product.save({validateBeforeSave: false});
 }
+
+// Delete Order
+export const deleteOrder = async(req, res, next) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        
+        if(!order) return next(new HandleError("Order Not Found", 404));
+
+        if(order.orderStatus !== "delivered") return next(new HandleError("Not delivered yet. Order cannot be deleted.", 400));
+
+        await Order.deleteOne({_id: req.params.id});
+        res.status(200).json({
+            success: true,
+            message: "Order Deleted Successfully"
+        })
+    } catch (error) {
+        next(error);
+    }
+}
