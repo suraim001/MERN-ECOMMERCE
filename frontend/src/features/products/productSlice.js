@@ -1,22 +1,24 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios';
 
-export const getProduct = createAsyncThunk('product/getProduct', async(_,{rejectWithValue})=>{
+export const getProduct = createAsyncThunk('product/getProduct', async ({ keyword, page=1 }, { rejectWithValue }) => {
     try {
-        const link = '/api/v1/products';
-        const {data} = await axios.get(link);
-        console.log('Response', data);
+        const link = keyword ? `/api/v1/products/?keyword=${encodeURIComponent(keyword)}&page=${page}` : `/api/v1/products/?page=${page}`;
+        const { data } = await axios.get(link);
+        // console.log('Response', data);
+        // if(!data) return rejectWithValue(error.response?.data || "An Error Occurred")
         return data;
     } catch (error) {
+        console.log(error.response?.data);
         return rejectWithValue(error.response?.data || "An Error Occurred")
     }
 })
 
 // Product Details
-export const getProductDetails = createAsyncThunk('product/getProductDetails', async(id,{rejectWithValue})=>{
+export const getProductDetails = createAsyncThunk('product/getProductDetails', async (id, { rejectWithValue }) => {
     try {
         const link = `/api/v1/product/${id}`;
-        const {data} = await axios.get(link);
+        const { data } = await axios.get(link);
         return data;
     } catch (error) {
         return rejectWithValue(error.response?.data || "An error occurred"
@@ -31,45 +33,51 @@ const productSlice = createSlice({
         productCount: 0,
         loading: false,
         error: null,
-        product: null
+        product: null,
+        resultsPerPage: 0,
+        totalPages: 0
     },
     reducers: {
         removeErrors: (state) => {
             state.error = null
         }
     },
-    extraReducers:(builder)=>{
-        builder.addCase(getProduct.pending, (state)=>{
-            state.loading=true;
+    extraReducers: (builder) => {
+        builder.addCase(getProduct.pending, (state) => {
+            state.loading = true;
             state.error = null;
         })
-        .addCase(getProduct.fulfilled,(state,action)=>{
-            // console.log('Fulfilled action payload', action.payload);
-            state.loading=false;
-            state.error=null;
-            state.products=action.payload.products;
-            state.productCount=action.payload.productCount;
-        })
-        .addCase(getProduct.rejected,(state, action)=>{
-            state.loading=false;
-            state.error=action.payload || "Something Went Wrong"
-        })
+            .addCase(getProduct.fulfilled, (state, action) => {
+                // console.log('Fulfilled action payload', action.payload);
+                state.loading = false;
+                state.error = null;
+                state.products = action.payload.products;
+                state.productCount = action.payload.productCount;
+                state.resultsPerPage = action.payload.resultsPerPage;
+                state.totalPages = action.payload.totalPages;
+            })
+            .addCase(getProduct.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || "Something Went Wrong";
+                state.products = [];
+                state.productCount = 0;
+            })
 
-        
-        builder.addCase(getProductDetails.pending, (state)=>{
+
+        builder.addCase(getProductDetails.pending, (state) => {
             state.loading = true;
             state.error = null
         })
-        .addCase(getProductDetails.fulfilled, (state, action)=>{
-            console.log(`Product Details`, action.payload);
-            state.loading = false;
-            state.error = null;
-            state.product = action.payload.product;
-        })
-        .addCase(getProductDetails.rejected, (state,action)=>{
-            state.loading = false;
-            state.error = action.payload || 'Something went wrong'
-        })
+            .addCase(getProductDetails.fulfilled, (state, action) => {
+                console.log(`Product Details`, action.payload);
+                state.loading = false;
+                state.error = null;
+                state.product = action.payload.product;
+            })
+            .addCase(getProductDetails.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload || 'Something went wrong'
+            })
     }
 })
 
