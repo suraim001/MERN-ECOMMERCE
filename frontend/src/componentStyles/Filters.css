@@ -1,79 +1,116 @@
 .filter-section {
-    padding: 20px;
-    border-radius: 8px;
-    color: var(--bg-secondary);
-    margin-top:120px;
-  }
-  
-  .filter {
-    margin-bottom: 15px;
- 
+  padding: 20px;
+  border-radius: 8px;
+  color: var(--bg-secondary);
+  margin-top: 120px;
 }
-  .filter-heading{
-    text-align: center;
-    font-size: 25px;
-    color: var(--bg-secondary);
-  }
-  
-  .filter h4 {
-    font-size: 16px;
-    margin-bottom: 8px;
-    color: var(--bg-secondary);
-  }
-  
-  .filter select,
-  .filter input[type="range"] {
-    width: 100%;
-    padding: 5px;
-    margin: 5px 0;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    background-color: var(--bg-secondary);
-    color: var(--text-light);
-  }
-  
-  .filter input[type="range"] {
-    -webkit-appearance: none;
-    appearance: none;
-    height: 2px;
-    background: #ddd;
-    border-radius: 5px; 
-    width: 100%;
-  }
-  
-  .filter input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    background: var(--primary-main);
-    border-radius: 50%;
-  }
-  
-  .filter input[type="range"]::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    background: var(--primary-main);
-    border-radius: 50%;
-  }
 
-  
-  .filters-container {
-    flex: 1 0 25%; 
-    max-width: 300px; 
-  }
-  
-  
-  
+.filter {
+  margin-bottom: 15px;
+}
+.filter-heading {
+  text-align: center;
+  font-size: 25px;
+  color: var(--bg-secondary);
+}
+.filter-limit {
+  margin-bottom: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+.filter-limit-heading {
+  text-align: left;
+  font-size: 18px;
+  color: var(--bg-secondary);
+  padding-bottom: 0;
+  width: 100%;
+}
+.limit-input-field {
+  width: 140px;
+  text-align: left;
+  display: block;
+  background-color: #ffffff;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  padding: 6px 8px;
+}
 
-  @media (max-width: 768px) {
+.limit-input-field:focus,
+.limit-input-field:hover {
+  background-color: #ffffff;
+  color: #111827;
+  outline: 2px solid rgba(59, 130, 246, 0.35);
+  outline-offset: 1px;
+}
 
-    .filter-section {
-      margin-top:50px;
-    }
-    .filters-container,
-    .product-section {
-      flex: 1 0 100%; 
-      max-width: 100%; 
-    }
+.limit-select-field {
+  width: 140px;
+  padding: 6px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  background-color: #ffffff;
+  color: #111827;
+}
+
+.filter h4 {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: var(--bg-secondary);
+}
+
+.filter select,
+.filter input[type="range"] {
+  width: 100%;
+  padding: 5px;
+  margin: 5px 0;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  background-color: var(--bg-secondary);
+  color: var(--text-light);
+}
+
+.filter input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 2px;
+  background: #ddd;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.filter input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: var(--primary-main);
+  border-radius: 50%;
+}
+
+.filter input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: var(--primary-main);
+  border-radius: 50%;
+}
+
+.filters-container {
+  flex: 1 0 25%;
+  max-width: 300px;
+}
+
+@media (max-width: 768px) {
+  .filter-section {
+    margin-top: 50px;
   }
+  .filters-container,
+  .product-section {
+    flex: 1 0 100%;
+    max-width: 100%;
+  }
+}

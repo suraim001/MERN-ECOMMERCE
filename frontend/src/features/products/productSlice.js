@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios';
 
-export const getProduct = createAsyncThunk('product/getProduct', async ({ keyword, page=1 }, { rejectWithValue }) => {
+export const getProduct = createAsyncThunk('product/getProduct', async ({ keyword, page=1, limit=6 }, { rejectWithValue }) => {
     try {
-        const link = keyword ? `/api/v1/products/?keyword=${encodeURIComponent(keyword)}&page=${page}` : `/api/v1/products/?page=${page}`;
+        const link = keyword ? `/api/v1/products/?keyword=${encodeURIComponent(keyword)}&page=${page}&limit=${limit}` : `/api/v1/products/?page=${page}&limit=${limit}`;
         const { data } = await axios.get(link);
         // console.log('Response', data);
         // if(!data) return rejectWithValue(error.response?.data || "An Error Occurred")
@@ -34,7 +34,7 @@ const productSlice = createSlice({
         loading: false,
         error: null,
         product: null,
-        resultsPerPage: 0,
+        resultPerPage: 0,
         totalPages: 0
     },
     reducers: {
@@ -53,7 +53,7 @@ const productSlice = createSlice({
                 state.error = null;
                 state.products = action.payload.products;
                 state.productCount = action.payload.productCount;
-                state.resultsPerPage = action.payload.resultsPerPage;
+                state.resultPerPage = action.payload.resultPerPage;
                 state.totalPages = action.payload.totalPages;
             })
             .addCase(getProduct.rejected, (state, action) => {

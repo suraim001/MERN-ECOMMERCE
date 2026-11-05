@@ -5,18 +5,18 @@
     transition: color 0.3s ease, transform 0.3s ease;
     color: var(--text-secondary);
   }
-  
+
   .star.filled {
-    color: var(--primary-main); 
+    color: #ffd700;
   }
-  
+
   .star.empty {
-    color: var(--text-secondary); 
+    color: var(--text-secondary);
   }
-  
+
   .star:hover {
-    transform: scale(1.2); 
-    color: var(--primary-main); 
+    color: #ffd700;
+    transform: scale(1.2);
   }
   
   .productCardSpan {
