@@ -1,15 +1,18 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from 'axios';
 
-export const getProduct = createAsyncThunk('product/getProduct', async ({ keyword, page=1, limit=6 }, { rejectWithValue }) => {
+export const getProduct = createAsyncThunk('product/getProduct', async ({ keyword, page=1, limit, category }, { rejectWithValue }) => {
     try {
-        const link = keyword ? `/api/v1/products/?keyword=${encodeURIComponent(keyword)}&page=${page}&limit=${limit}` : `/api/v1/products/?page=${page}&limit=${limit}`;
+        let link = `/api/v1/products/?page=${page}`;
+        if(limit) link += `&limit=${limit}`;
+        if(keyword) link += `&keyword=${keyword}`;
+        if(category) link += `&category=${category}`;
         const { data } = await axios.get(link);
         // console.log('Response', data);
         // if(!data) return rejectWithValue(error.response?.data || "An Error Occurred")
         return data;
     } catch (error) {
-        console.log(error.response?.data);
+        // console.log(error.response?.data);
         return rejectWithValue(error.response?.data || "An Error Occurred")
     }
 })

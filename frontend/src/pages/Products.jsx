@@ -22,6 +22,7 @@ const Products = () => {
 
     const searchParams = new URLSearchParams(location.search);
     const keyword = searchParams.get("keyword");
+    const category = searchParams.get("category");
     const pageFromURL = parseInt(searchParams.get("page"), 10) || 1;
     const limitFromURL = parseInt(searchParams.get("limit"), 10) || 6;
     const presetLimits = [2, 4, 6, 8, 10];
@@ -29,12 +30,13 @@ const Products = () => {
     const [currentLimit, setCurrentLimit] = useState(Number(limitFromURL));
     const [limitInputValue, setLimitInputValue] = useState(String(limitFromURL));
     const [selectedLimit, setSelectedLimit] = useState("");
-    // console.log(keyword);
+
+    const categories = ["laptop", "mobile", "tv", "shirt", "pant"];
 
 
     useEffect(() => {
-        dispatch(getProduct({ keyword, page: currentPage, limit: currentLimit }));
-    }, [dispatch, keyword, currentPage, currentLimit]);
+        dispatch(getProduct({ keyword, page: currentPage, limit: currentLimit, category }));
+    }, [dispatch, keyword, currentPage, currentLimit, category]);
 
     useEffect(() => {
         if (error) {
@@ -113,6 +115,13 @@ const Products = () => {
         }
     };
 
+    const handleCategoryClick = (category) => {
+        const newSearchParams = new URLSearchParams(location.search);
+        newSearchParams.set('category', category);
+        newSearchParams.delete('page');
+        navigate(`?${newSearchParams.toString()}`);
+    }
+
     const isNoProductsError = error?.statusCode === 404;
     const hasNoProducts = products.length === 0 || isNoProductsError;
 
@@ -152,6 +161,15 @@ const Products = () => {
                         </div>
                         <h3 className='filter-heading'>CATEGORIES</h3>
                         {/* Render Categories */}
+                        <ul>
+                            {
+                                categories.map((category)=>{
+                                    return(
+                                        <li key={category} onClick={()=>handleCategoryClick(category)}>{category}</li>
+                                    )
+                                })
+                            }
+                        </ul>
                     </div>
                     <div className="products-section">
                         {!hasNoProducts ? (
