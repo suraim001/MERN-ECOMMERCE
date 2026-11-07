@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import '../UserStyles/Form.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
+import { useSelector, useDispatch } from 'react-redux';
+import { register, removeErrors, removeSuccess } from '../features/user/userSlice';
 
 const Register = () => {
 
@@ -14,6 +16,9 @@ const Register = () => {
     const { name, username, email, password } = user;
     const [avatar, setAvatar] = useState("");
     const [avatarPreview, setAvatarPreview] = useState("./images/profile.png");
+    const {success, loading, error} = useSelector(state => state.user)
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const registerDataChange = (e) => {
         if (e.target.name === 'avatar') {
@@ -36,14 +41,21 @@ const Register = () => {
 
     const registerSubmit = (e) => {
         e.preventDefault();
-        const myForm = new FormData();
-        myForm.set('name', name);
-        myForm.set('username', username);
-        myForm.set('email', email);
-        myForm.set('password', password);
-        myForm.set('avatar', avatar);
-
+        dispatch(register({ name, username, email, password }));
     }
+    useEffect(()=>{
+        if(error){
+            toast.error(error, {position:'top-center', autoClose:3000});
+            dispatch(removeErrors());
+        }
+    },[dispatch, error]);
+    useEffect(()=>{
+        if(success){
+            toast.success("Registration Successful", {position:'top-center', autoClose:3000});
+            dispatch(removeSuccess());
+            navigate('/login');
+        }
+    },[dispatch, success]);
 
 
     return (

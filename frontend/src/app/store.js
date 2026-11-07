@@ -5,6 +5,6 @@ import userReducer from "../features/user/userSlice.js"
 export const store = configureStore({
     reducer: {
         product: productReducer,
-        user:userReducer
+        user: userReducer
     }
 })
