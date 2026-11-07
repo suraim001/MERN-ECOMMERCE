@@ -16,14 +16,14 @@ export const register = createAsyncThunk('user/register', async (userData, { rej
 })
 
 // Login API
-export const login = createAsyncThunk('user/login', async({email, password}, {rejectWithValue}) => {
+export const login = createAsyncThunk('user/login', async ({ email, username, password }, { rejectWithValue }) => {
     try {
-        const config ={
+        const config = {
             headers: {
-                'content-Type':'application/json'
+                'content-Type': 'application/json'
             }
         }
-        const {data} = await axios.post('/api/v1/login', {email, password}, config);
+        const { data } = await axios.post('/api/v1/login', { email, username, password }, config);
         return data;
     } catch (error) {
         return rejectWithValue(error.response?.data || "Registration failed. Please try again later")
@@ -50,9 +50,9 @@ const userSlice = createSlice({
     extraReducers: (builder) => {
         // Registration cases
         builder.addCase(register.pending, (state) => {
-                state.loading = true,
-                    state.error = null
-            })
+            state.loading = true,
+                state.error = null
+        })
             .addCase(register.fulfilled, (state, action) => {
                 state.loading = false;
                 state.success = action.payload.success;
@@ -64,14 +64,14 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload?.message || 'Registration Failed. Please try agin later';
                 state.user = null;
-                state.isAuthenticated=false;
+                state.isAuthenticated = false;
             })
-        
+
         // Login Cases
         builder.addCase(login.pending, (state) => {
-                state.loading = true,
-                    state.error = null
-            })
+            state.loading = true,
+                state.error = null
+        })
             .addCase(login.fulfilled, (state, action) => {
                 state.loading = false;
                 state.success = action.payload.success;
@@ -84,7 +84,7 @@ const userSlice = createSlice({
                 state.loading = false;
                 state.error = action.payload?.message || 'Login Failed. Please try agin later';
                 state.user = null;
-                state.isAuthenticated=false;
+                state.isAuthenticated = false;
             })
 
     }

@@ -37,6 +37,9 @@ export const loginUser = async (req, res, next) => {
     try {
 
         const { email, username, password } = req.body;
+        if (email && !validator.isEmail(email)) {
+            return next(new HandleError("Please enter a valid email address", 400));
+        }
         if ((!email && !username) || !password) {
             return next(new HandleError("Email/Username or Password cannot be empty", 400));
         }
