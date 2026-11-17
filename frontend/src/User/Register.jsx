@@ -24,6 +24,11 @@ const Register = () => {
         if (e.target.name === 'avatar') {
             const file = e.target.files[0];
             if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                toast.error("Avatar must be smaller than 5 MB", { position: 'top-center', autoClose: 3000 });
+                e.target.value = "";
+                return;
+            }
 
             const reader = new FileReader();
             reader.onload = () => {
@@ -41,7 +46,7 @@ const Register = () => {
 
     const registerSubmit = (e) => {
         e.preventDefault();
-        dispatch(register({ name, username, email, password }));
+        dispatch(register({ name, username, email, password, avatar: avatar || undefined }));
     }
     useEffect(()=>{
         if(error){
@@ -79,7 +84,7 @@ const Register = () => {
                         <img src={avatarPreview} alt="Avatar Preview" className='avatar' />
                         <input type="file" placeholder='' name='avatar' className='file-input' accept='image/*' onChange={registerDataChange} />
                     </div>
-                    <button className="authBtn">Sign Up</button>
+                    <button className="authBtn" disabled={loading}>{loading? 'Signing Up ...':'Sign Up'}</button>
 
                     <p className="form-links">
                         Already have an account?<Link to={'/login'}>Login</Link>

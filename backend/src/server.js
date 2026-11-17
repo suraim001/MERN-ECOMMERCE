@@ -1,13 +1,19 @@
 import app from './app.js';
 import dotenv from 'dotenv';
 import { connectDB } from './config/db.js';
+import { v2 as cloudinary } from 'cloudinary';
 
-dotenv.config({path: 'backend/src/config/config.env'});
+dotenv.config({ path: 'backend/src/config/config.env' });
 
 connectDB();
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_NAME,
+    api_key: process.env.API_KEY,
+    api_secret: process.env.API_SECRET
+})
 
 // Handle uncaught exeption error
-process.on('uncaughtException', (err)=>{
+process.on('uncaughtException', (err) => {
     console.log(`Error: ${err.message}`);
     console.log("Server is shutting down due to uncaught execption error");
     process.exit(1);
@@ -22,11 +28,11 @@ const server = app.listen(port, () => {
 
 // console.log(myName);
 
-process.on('unhandledRejection', (err)=>{
+process.on('unhandledRejection', (err) => {
     console.log(`Error: ${err.message}`);
     console.log(`Server is shutting down, due to unhandled promise rejection`);
-    server.close(()=>{
+    server.close(() => {
         process.exit(1);
     })
-    
+
 })

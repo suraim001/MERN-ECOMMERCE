@@ -99,6 +99,7 @@
   .form-links a {
     color:var(--border-color);
     margin-left: 10px;
+    cursor: pointer;
     
   }
   

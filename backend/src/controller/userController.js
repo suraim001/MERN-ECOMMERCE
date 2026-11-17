@@ -3,31 +3,49 @@ import HandleError from "../utils/handleError.js";
 import validator from "validator";
 import { sendToken } from "../utils/jwtToken.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import { v2 as cloudinary } from 'cloudinary';
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 
 // Register
 export const registerUser = async (req, res, next) => {
     try {
-        const { name, username, email, password } = req.body;
+        const { name, username, email, password, avatar } = req.body;
 
-        if (!name || !username || !email || !password) return next(new HandleError("All the fields are required", 400));
+        if (!name || !username || !email || !password) {
+            return next(new HandleError("All the fields are required", 400));
+        }
+
+        let avatarData = {
+            public_id: "default-avatar",
+            url: "/images/profile.png"
+        };
+
+        if (avatar) {
+            const myCloud = await cloudinary.uploader.upload(avatar, {
+                folder: 'avatars',
+                width: 150,
+                crop: 'scale'
+            });
+            avatarData = {
+                public_id: myCloud.public_id,
+                url: myCloud.secure_url
+            };
+        }
 
         const user = await User.create({
             name,
             username,
             email,
             password,
-            avatar: {
-                public_id: "This is temp public_id",
-                url: "This is temp url"
-            },
+            avatar: avatarData,
             isLoggedIn: true
         })
         user.password = undefined;
 
         sendToken(user, 201, res);
     } catch (error) {
+        // console.log(error);
         next(error);
     }
 }
@@ -253,10 +271,10 @@ export const updateProfile = async (req, res, next) => {
 }
 
 // Admin - Get all users information
-export const getUsersList = async(req, res, next) => {
+export const getUsersList = async (req, res, next) => {
     try {
         const users = await User.find();
-        if(!users){
+        if (!users) {
             return next(new HandleError("Something went wrong", 500));
         }
         res.status(200).json({
@@ -270,10 +288,10 @@ export const getUsersList = async(req, res, next) => {
 }
 
 // Admin - Get Single User Information
-export const getSingleUser = async(req, res, next) => {
+export const getSingleUser = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id);
-        if(!user) return next(new HandleError("User doesn't exist", 404));
+        if (!user) return next(new HandleError("User doesn't exist", 404));
         res.status(200).json({
             success: true,
             user
@@ -284,10 +302,10 @@ export const getSingleUser = async(req, res, next) => {
 }
 
 // Admin - Change User Role
-export const updateUserRole = async(req, res, next) => {
+export const updateUserRole = async (req, res, next) => {
     try {
         const { role } = req.body;
-        if(!role) return next(new HandleError("Invalid Input", 400))
+        if (!role) return next(new HandleError("Invalid Input", 400))
         const newUserData = {
             role
         }
@@ -295,7 +313,7 @@ export const updateUserRole = async(req, res, next) => {
             runValidators: true,
             returnDocument: 'after'
         });
-        if(!user) return next(new HandleError("User doesn't exist", 404));
+        if (!user) return next(new HandleError("User doesn't exist", 404));
 
         res.status(200).json({
             success: true,
@@ -307,10 +325,10 @@ export const updateUserRole = async(req, res, next) => {
 }
 
 // Admin - Delete User Profile
-export const deleteUser = async(req, res, next) => {
+export const deleteUser = async (req, res, next) => {
     try {
         const user = await User.findById(req.params.id);
-        if(!user) return next(new HandleError("User doesn't exist", 404));
+        if (!user) return next(new HandleError("User doesn't exist", 404));
 
         await User.findByIdAndDelete(req.params.id);
         res.status(200).json({
