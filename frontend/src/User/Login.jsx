@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import '../UserStyles/Form.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { login, removeErrors, removeSuccess } from '../features/user/userSlice';
+import { login, removeErrors, removeSuccess } from '../features/users/userSlice';
 import { toast } from 'react-toastify';
 
 const Login = () => {

@@ -3,7 +3,7 @@ import '../UserStyles/Form.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from 'react-redux';
-import { register, removeErrors, removeSuccess } from '../features/user/userSlice';
+import { register, removeErrors, removeSuccess } from '../features/users/userSlice';
 
 const Register = () => {
 

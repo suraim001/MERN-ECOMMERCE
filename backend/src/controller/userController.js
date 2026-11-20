@@ -17,8 +17,8 @@ export const registerUser = async (req, res, next) => {
         }
 
         let avatarData = {
-            public_id: "default-avatar",
-            url: "/images/profile.png"
+            public_id: "avatars/zaqz9pqbp9cihllepauv",
+            url: "https://res.cloudinary.com/jk4exrni/image/upload/v1795171357/avatars/zaqz9pqbp9cihllepauv.png"
         };
 
         if (avatar) {

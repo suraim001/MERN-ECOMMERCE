@@ -7,6 +7,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
+import { useSelector } from 'react-redux';
 
 const Navbar = () => {
 
@@ -15,7 +16,7 @@ const Navbar = () => {
     const [searchQuery, setSearchQuery] = useState("");
     const toggleSearch = () => setIsSearchOpen(!isSearchOpen);
     const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
-    const isAuthenticated = false;
+    const {isAuthenticated} = useSelector(state=>state.user);
     const navigate = useNavigate();
     const handleSearchSubmit = (e) => {
         e.preventDefault();

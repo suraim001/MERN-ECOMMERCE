@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
+import axios, { create } from "axios";
 
 // Registration API
 export const register = createAsyncThunk('user/register', async (userData, { rejectWithValue }) => {
@@ -26,7 +26,25 @@ export const login = createAsyncThunk('user/login', async ({ email, username, pa
         const { data } = await axios.post('/api/v1/login', { email, username, password }, config);
         return data;
     } catch (error) {
-        return rejectWithValue(error.response?.data || "Registration failed. Please try again later")
+        return rejectWithValue(error.response?.data || "Login failed. Please try again later")
+    }
+})
+
+export const loadUser = createAsyncThunk('user/loadUser', async (_, { rejectWithValue }) => {
+    try {
+        const { data } = await axios.get('/api/v1/profile');
+        return data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || 'Failed to load user profile');
+    }
+})
+
+export const logout = createAsyncThunk('user/logout', async(_,{rejectWithValue})=>{
+    try {
+        const {data} = await axios.post('/api/v1/logout',{withCredentials: true});
+        return data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || "Something went wrong. Logout failed");
     }
 })
 
@@ -85,6 +103,40 @@ const userSlice = createSlice({
                 state.error = action.payload?.message || 'Login Failed. Please try agin later';
                 state.user = null;
                 state.isAuthenticated = false;
+            })
+
+        // Loading User Cases
+        builder.addCase(loadUser.pending, (state) => {
+            state.loading = true,
+                state.error = null
+        })
+            .addCase(loadUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                // state.user = action.payload?.user || null;
+                // state.isAuthenticated = action.payload.user?.isLoggedIn;
+            })
+            .addCase(loadUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || 'Failed to load user profile';
+                state.user = null;
+                state.isAuthenticated = false;
+            })
+
+        // Logout cases
+        builder.addCase(logout.pending, (state) => {
+            state.loading = true,
+                state.error = null
+        })
+            .addCase(logout.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                state.user = null;
+                state.isAuthenticated = false;
+            })
+            .addCase(logout.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || 'Logout Failed';
             })
 
     }
