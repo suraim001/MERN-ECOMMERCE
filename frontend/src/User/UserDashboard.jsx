@@ -16,7 +16,7 @@ const UserDashboard = ({ user }) => {
     }
 
     const orders = () => {
-        navigate('/orders/me');
+        navigate('/orders');
     }
     const profile = () => {
         navigate('/profile');
@@ -42,7 +42,7 @@ const UserDashboard = ({ user }) => {
         { name: 'Account', funcName: profile },
         { name: 'Logout', funcName: logoutUser },
     ]
-    if (user.role === 'admin') {
+    if (user?.role === 'admin') {
         options.unshift({
             name: 'Admins Dashboard', funcName: dashboard
         })

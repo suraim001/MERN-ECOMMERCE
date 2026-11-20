@@ -253,7 +253,7 @@ export const updateProfile = async (req, res, next) => {
         }
         if (!name || !username) return next(new HandleError("Name or username cannot be empty", 400));
 
-        if ('email' in req.body || 'password' in req.body || '_id' in req.body || 'role' in req.body) return next(new HandleError("Only name and username can be changed", 401));
+        // if ('email' in req.body || 'password' in req.body || '_id' in req.body || 'role' in req.body) return next(new HandleError("Only name and username can be changed", 401));
 
         const user = await User.findByIdAndUpdate(req.user.id, updateUserDetails, {
             returnDocument: "after",

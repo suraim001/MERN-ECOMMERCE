@@ -8,6 +8,7 @@ import Login from './User/Login';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadUser } from './features/users/userSlice';
 import UserDashboard from './User/UserDashboard';
+import Profile from './User/Profile';
 
 
 const App = () => {
@@ -30,6 +31,7 @@ const App = () => {
         <Route path='/products/:keyword' element={<Products/>}/>
         <Route path='/register' element={<Register/>}/>
         <Route path='/login' element={<Login/>}/>
+        <Route path='/profile' element={<Profile/>}/>
       </Routes>
       {isAuthenticated && <UserDashboard user={user}/>}
     </Router>
