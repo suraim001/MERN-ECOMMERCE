@@ -21,7 +21,7 @@ const Home = () => {
 
   useEffect(()=>{
     if(error){
-      toast.error(error.message, {position:'top-center', autoClose:3000});
+      toast.error(error, {position:'top-center', autoClose:3000});
       dispatch(removeErrors());
     }
   },[dispatch, error]);

@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import PageTitle from '../components/PageTitle';
 import Loader from '../components/Loader';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const Profile = () => {
 
@@ -20,12 +22,13 @@ const Profile = () => {
 
   return (
     <>
-    {loading? (<Loader/>) : isAuthenticated && user? (<div className="profile-container">
+    <Navbar/>
+    <div className="profile-container">
         <PageTitle title={`Profile - ${user?.name}`}/>
         <div className="profile-image">
             <h1 className="profile-heading">My Profile</h1>
             <img src={user?.avatar?.url} alt="User Profile" className="profile-image" />
-            <Link to={'/profile/update'}>Edit Proifle</Link>
+            <Link to={'/profile/edit'}>Edit Proifle</Link>
         </div>
         <div className="profile-details">
             <div className="profile-detail">
@@ -49,7 +52,8 @@ const Profile = () => {
             <Link to={'/orders'}>My Orders</Link>
             <Link to={'/password/update'}>Change Password</Link>
         </div>
-    </div>):null}
+    </div>
+    <Footer/>
     </>
   )
 }

@@ -246,13 +246,28 @@ export const updatePassword = async (req, res, next) => {
 // Updating user profile
 export const updateProfile = async (req, res, next) => {
     try {
-        const { name, username } = req.body;
+        const { name, username, avatar } = req.body;
         const updateUserDetails = {
             name,
             username
         }
         if (!name || !username) return next(new HandleError("Name or username cannot be empty", 400));
 
+        if(avatar !== ''){
+            const user = await User.findById(req.user.id);
+            const imageId = user.avatar.public_id;
+            await cloudinary.uploader.destroy(imageId);
+            const myCloud = await cloudinary.uploader.upload(avatar, {
+                folder:'avatars',
+                width:150,
+                crop:'scale'
+            })
+
+            updateUserDetails.avatar = {
+                public_id:myCloud.public_id,
+                url:myCloud.secure_url
+            }
+        }
         // if ('email' in req.body || 'password' in req.body || '_id' in req.body || 'role' in req.body) return next(new HandleError("Only name and username can be changed", 401));
 
         const user = await User.findByIdAndUpdate(req.user.id, updateUserDetails, {
