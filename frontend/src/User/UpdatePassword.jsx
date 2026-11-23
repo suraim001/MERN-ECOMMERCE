@@ -5,8 +5,9 @@ import Navbar from '../components/Navbar';
 import PageTitle from '../components/PageTitle';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { removeErrors, updatePassword } from '../features/users/userSlice';
+import { removeErrors, removeSuccess, updatePassword } from '../features/users/userSlice';
 import { toast } from 'react-toastify';
+import Loader from '../components/Loader';
 
 const UpdatePassword = () => {
  
@@ -24,9 +25,9 @@ const UpdatePassword = () => {
         myForm.set('oldPassword', oldPassword);
         myForm.set('newPassword', newPassword);
         myForm.set('confirmPassword', confirmPassword);
-        for(let pair of myForm.entries()){
-            console.log(pair[0]+'-'+pair[1]);
-        }
+        // for(let pair of myForm.entries()){
+        //     console.log(pair[0]+'-'+pair[1]);
+        // }
         dispatch(updatePassword(myForm))
     }
 
@@ -36,9 +37,18 @@ const UpdatePassword = () => {
             dispatch(removeErrors());
         }
     },[dispatch, error])
+    useEffect(()=>{
+            if(success){
+                toast.success("Passward updated successfully", {position:'top-center', autoClose:3000});
+                dispatch(removeSuccess());
+                navigate('/profile');
+            }
+        },[dispatch, success]);
 
   return (
     <>
+    {loading? (<Loader/>):(
+        <>
     <Navbar/>
     <PageTitle title='Update - Password'/>
     <div className="container update-container">
@@ -59,6 +69,8 @@ const UpdatePassword = () => {
         </div>
     </div>
     <Footer/>
+    </>
+    )}
     </>
   )
 }
