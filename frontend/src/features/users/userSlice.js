@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios, { create } from "axios";
+import axios from "axios";
 
 // Registration API
 export const register = createAsyncThunk('user/register', async (userData, { rejectWithValue }) => {
@@ -75,6 +75,21 @@ export const updatePassword = createAsyncThunk('user/updatePassword', async(form
         return rejectWithValue(error.response?.data || 'Failed to change the password. Please try again later')
     }
 })
+
+export const forgotPassword = createAsyncThunk('user/forgotPassword', async(email, {rejectWithValue})=>{
+    try {
+        const config = {
+            headers:{
+                'Content-Type' : 'application/json'
+            }
+        }
+        const {data} = await axios.post('/api/v1/login/reset', email, config);
+        return data;
+    } catch (error) {
+        return rejectWithValue(error.response?.data || {message: "Something went wrong! Couldn't sent email"});
+    }
+})
+
 const userSlice = createSlice({
     name: 'user',
     initialState: {
@@ -197,6 +212,22 @@ const userSlice = createSlice({
             .addCase(updatePassword.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload?.message || 'Failed to update the password. Please try again later';
+            })
+
+        // Forgot Password Request
+        builder.addCase(forgotPassword.pending, (state) => {
+            state.loading = true,
+                state.error = null
+        })
+            .addCase(forgotPassword.fulfilled, (state, action) => {
+                state.loading = false;
+                state.error = null;
+                state.success = action.payload?.success;
+                state.message = action.payload?.message;
+            })
+            .addCase(forgotPassword.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || "Something went wrong! Couldn't sent email";
             })
 
     }
