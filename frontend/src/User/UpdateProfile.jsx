@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { removeErrors, removeSuccess, updateProfile } from '../features/users/userSlice';
 import Loader from '../components/Loader';
+import PageTitle from '../components/PageTitle';
 
 
 const UpdateProfile = () => {
@@ -78,7 +79,7 @@ const UpdateProfile = () => {
         <>
         {loading?(<Loader/>):(<>
             <Navbar />
-
+            <PageTitle title={'Update - Profile'}/>
             <div className="container update-container">
                 <div className="form-content">
                     <form className="form" encType='multipart/form-data' onSubmit={submitUpdate}>

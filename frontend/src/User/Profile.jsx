@@ -50,7 +50,7 @@ const Profile = () => {
         </div>
         <div className="profile-buttons">
             <Link to={'/orders'}>My Orders</Link>
-            <Link to={'/password/update'}>Change Password</Link>
+            <Link to={'/password/change'}>Change Password</Link>
         </div>
     </div>
     <Footer/>
